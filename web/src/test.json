@@ -1,0 +1,387 @@
+{
+    "Items": {
+        "Storage": [
+            {
+                "id": "MediaBucketBCBB02BA",
+                "name": "media-bucket",
+                "type": "Bucket",
+                "properties": {
+                    "BucketName": "media-bucket"
+                },
+                "tier": "Storage"
+            },
+            {
+                "id": "MediaBucketPolicy68C27F6B",
+                "name": null,
+                "type": "BucketPolicy",
+                "properties": {
+                    "Bucket": {
+                        "Ref": "MediaBucketBCBB02BA"
+                    },
+                    "PolicyDocument": {
+                        "Statement": [
+                            {
+                                "Action": "s3:GetObject",
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "CanonicalUser": {
+                                        "Fn::GetAtt": [
+                                            "DistributionOrigin1S3Origin5F5C0696",
+                                            "S3CanonicalUserId"
+                                        ]
+                                    }
+                                },
+                                "Resource": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "MediaBucketBCBB02BA",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "/*"
+                                        ]
+                                    ]
+                                }
+                            }
+                        ],
+                        "Version": "2012-10-17"
+                    }
+                },
+                "tier": "Storage"
+            }
+        ],
+        "ETL": [],
+        "Database": [
+            {
+                "id": "MediaTableCFC93525",
+                "name": "MediaTableCFC93525",
+                "type": "Table",
+                "properties": {
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "id",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "id",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 5,
+                        "WriteCapacityUnits": 5
+                    }
+                },
+                "tier": "Database"
+            }
+        ],
+        "Compute": [
+            {
+                "id": "MediaFunctionD33228E9",
+                "name": "MediaFunctionD33228E9",
+                "type": "Function",
+                "properties": {
+                    "Code": {
+                        "S3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                        },
+                        "S3Key": "d5e85b6a03e0dd242d37c80057c05e3ca8b773b83276cc90b18fec315d5a201c.zip"
+                    },
+                    "Environment": {
+                        "Variables": {
+                            "TABLE_NAME": {
+                                "Ref": "MediaTableCFC93525"
+                            },
+                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                        }
+                    },
+                    "Handler": "index.handler",
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "MediaFunctionServiceRole8E5A8C78",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x"
+                },
+                "tier": "Compute",
+                "group": "Med"
+            },
+            {
+                "id": "MediaFunction2B5AA6D13",
+                "name": "MediaFunction2B5AA6D13",
+                "type": "Function",
+                "properties": {
+                    "Code": {
+                        "S3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                        },
+                        "S3Key": "d5e85b6a03e0dd242d37c80057c05e3ca8b773b83276cc90b18fec315d5a201c.zip"
+                    },
+                    "Environment": {
+                        "Variables": {
+                            "TABLE_NAME": {
+                                "Ref": "MediaTableCFC93525"
+                            },
+                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                        }
+                    },
+                    "Handler": "index.handler",
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "MediaFunction2ServiceRoleE0ACFE05",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x"
+                },
+                "tier": "Compute",
+                "group": "Med"
+            }
+        ],
+        "Integration": [
+            {
+                "id": "MediaApimediaPOSTBF0129EE",
+                "name": "MediaApimediaPOSTBF0129EE",
+                "type": "Method",
+                "properties": {
+                    "AuthorizationType": "NONE",
+                    "HttpMethod": "POST",
+                    "Integration": {
+                        "IntegrationHttpMethod": "POST",
+                        "Type": "AWS_PROXY",
+                        "Uri": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "arn:",
+                                    {
+                                        "Ref": "AWS::Partition"
+                                    },
+                                    ":apigateway:",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    ":lambda:path/2015-03-31/functions/",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "MediaFunctionD33228E9",
+                                            "Arn"
+                                        ]
+                                    },
+                                    "/invocations"
+                                ]
+                            ]
+                        }
+                    },
+                    "ResourceId": {
+                        "Ref": "MediaApimedia0E928C21"
+                    },
+                    "RestApiId": {
+                        "Ref": "MediaApi74555414"
+                    }
+                },
+                "tier": "Integration",
+                "group": "POST"
+            },
+            {
+                "id": "MediaApimediaGET01487978",
+                "name": "MediaApimediaGET01487978",
+                "type": "Method",
+                "properties": {
+                    "AuthorizationType": "NONE",
+                    "HttpMethod": "GET",
+                    "Integration": {
+                        "IntegrationHttpMethod": "POST",
+                        "Type": "AWS_PROXY",
+                        "Uri": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "arn:",
+                                    {
+                                        "Ref": "AWS::Partition"
+                                    },
+                                    ":apigateway:",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    ":lambda:path/2015-03-31/functions/",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "MediaFunction2B5AA6D13",
+                                            "Arn"
+                                        ]
+                                    },
+                                    "/invocations"
+                                ]
+                            ]
+                        }
+                    },
+                    "ResourceId": {
+                        "Ref": "MediaApimedia0E928C21"
+                    },
+                    "RestApiId": {
+                        "Ref": "MediaApi74555414"
+                    }
+                },
+                "tier": "Integration",
+                "group": "GET"
+            }
+        ],
+        "Network": [
+            {
+                "id": "Distribution830FAC52",
+                "name": "example.com",
+                "type": "Distribution",
+                "properties": {
+                    "DistributionConfig": {
+                        "Aliases": [
+                            "example.com"
+                        ],
+                        "DefaultCacheBehavior": {
+                            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                            "Compress": true,
+                            "TargetOriginId": "ExamplesStackDistributionOrigin16053FBC1",
+                            "ViewerProtocolPolicy": "allow-all"
+                        },
+                        "Enabled": true,
+                        "HttpVersion": "http2",
+                        "IPV6Enabled": true,
+                        "Origins": [
+                            {
+                                "DomainName": {
+                                    "Fn::GetAtt": [
+                                        "MediaBucketBCBB02BA",
+                                        "RegionalDomainName"
+                                    ]
+                                },
+                                "Id": "ExamplesStackDistributionOrigin16053FBC1",
+                                "S3OriginConfig": {
+                                    "OriginAccessIdentity": {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "origin-access-identity/cloudfront/",
+                                                {
+                                                    "Ref": "DistributionOrigin1S3Origin5F5C0696"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        "ViewerCertificate": {
+                            "AcmCertificateArn": {
+                                "Ref": "Certificate4E7ABB08"
+                            },
+                            "MinimumProtocolVersion": "TLSv1.2_2021",
+                            "SslSupportMethod": "sni-only"
+                        }
+                    }
+                },
+                "tier": "Network"
+            },
+            {
+                "id": "MediaApi74555414",
+                "name": "example.com",
+                "type": "RestApi",
+                "properties": {
+                    "Name": "example.com"
+                },
+                "tier": "Network"
+            }
+        ],
+        "Ingress": [
+            {
+                "id": "HostedZoneDB99F866",
+                "name": "example.com.",
+                "type": "HostedZone",
+                "properties": {
+                    "Name": "example.com."
+                },
+                "tier": "Ingress"
+            },
+            {
+                "id": "Certificate4E7ABB08",
+                "name": "example.com",
+                "type": "Certificate",
+                "properties": {
+                    "DomainName": "example.com",
+                    "DomainValidationOptions": [
+                        {
+                            "DomainName": "example.com",
+                            "HostedZoneId": {
+                                "Ref": "HostedZoneDB99F866"
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        {
+                            "Key": "Name",
+                            "Value": "ExamplesStack/Certificate"
+                        }
+                    ],
+                    "ValidationMethod": "DNS"
+                },
+                "tier": "Ingress"
+            }
+        ]
+    },
+    "Edges": [
+        {
+            "source": "MediaTableCFC93525",
+            "target": "MediaFunctionD33228E9"
+        },
+        {
+            "source": "MediaTableCFC93525",
+            "target": "MediaFunction2B5AA6D13"
+        },
+        {
+            "source": "MediaFunctionD33228E9",
+            "target": "MediaApimediaPOSTBF0129EE"
+        },
+        {
+            "source": "MediaFunction2B5AA6D13",
+            "target": "MediaApimediaGET01487978"
+        },
+        {
+            "source": "Distribution830FAC52",
+            "target": "HostedZoneDB99F866"
+        },
+        {
+            "source": "Distribution830FAC52",
+            "target": "Certificate4E7ABB08"
+        },
+        {
+            "source": "MediaApimediaPOSTBF0129EE",
+            "target": "MediaApi74555414"
+        },
+        {
+            "source": "MediaApimediaGET01487978",
+            "target": "MediaApi74555414"
+        },
+        {
+            "source": "MediaApi74555414",
+            "target": "HostedZoneDB99F866"
+        },
+        {
+            "source": "MediaApi74555414",
+            "target": "Certificate4E7ABB08"
+        },
+        {
+            "source": "Distribution830FAC52",
+            "target": "Certificate4E7ABB08"
+        },
+        {
+            "source": "MediaApi74555414",
+            "target": "Certificate4E7ABB08"
+        }
+    ]
+}
