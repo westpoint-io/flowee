@@ -4,7 +4,7 @@ To get started with this project, follow the steps below:
 
 1. Clone the repository to your local machine:
     ```bash
-    git clone https://github.com/westpointio/flowee.git
+    git clone https://github.com/westpoint-io/flowee.git
     ```
 
 2. Create a virtual environment for your Python project:
