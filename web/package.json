@@ -9,11 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "lodash": "^4.17.21",
     "preact": "^10.19.6",
-    "reactflow": "^11.11.1"
+    "reactflow": "^11.11.1",
+    "styled-components": "^6.1.8"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.8.2",
+    "@types/lodash": "^4.17.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   }

@@ -1,0 +1,1 @@
+export const COLUMNS_PER_ROW = 15;
