@@ -76,8 +76,8 @@ def map_resources_to_actual_resource(id, template):
     template['Resources'][id]['ResourceId'] = id
     return template['Resources'][id]
 
-# with open('/home/dario/flowee/example/cdk.out/ExamplesStack.template.json') as f:
-with open('template.json') as f:
+with open('/home/dario/flowee/example/cdk.out/ExamplesStack.template.json') as f:
+# with open('template.json') as f:
     cloudformation_json = f.read()
 
     template = json.loads(cloudformation_json)

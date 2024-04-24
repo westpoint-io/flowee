@@ -53,11 +53,179 @@
                 "tier": "Storage"
             }
         ],
-        "ETL": [],
+        "ETL": [
+            {
+                "id": "MyStateMachine6C968CA5",
+                "name": "MyStateMachine6C968CA5",
+                "type": "StateMachine",
+                "properties": {
+                    "DefinitionString": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "{\"StartAt\":\"FirstState\",\"States\":{\"FirstState\":{\"Next\":\"SecondState\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "MediaFunctionD33228E9",
+                                        "Arn"
+                                    ]
+                                },
+                                "\",\"Payload.$\":\"$\"}},\"SecondState\":{\"Type\":\"Pass\",\"Result\":{\"success\":true},\"Next\":\"FinalState\"},\"FinalState\":{\"Type\":\"Succeed\"}},\"TimeoutSeconds\":300}"
+                            ]
+                        ]
+                    },
+                    "RoleArn": {
+                        "Fn::GetAtt": [
+                            "MyStateMachineRoleD59FFEBC",
+                            "Arn"
+                        ]
+                    }
+                },
+                "tier": "ETL"
+            },
+            {
+                "id": "MyStateMachine268DAC43E",
+                "name": "MyStateMachine268DAC43E",
+                "type": "StateMachine",
+                "properties": {
+                    "DefinitionString": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "{\"StartAt\":\"FirstState\",\"States\":{\"FirstState\":{\"Type\":\"Task\",\"Resource\":\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "MediaFunctionD33228E9",
+                                        "Arn"
+                                    ]
+                                },
+                                "\",\"End\":true}}}"
+                            ]
+                        ]
+                    },
+                    "RoleArn": {
+                        "Fn::GetAtt": [
+                            "MyStateMachine2Role9449E860",
+                            "Arn"
+                        ]
+                    }
+                },
+                "tier": "ETL"
+            }
+        ],
         "Database": [
+            {
+                "id": "DatabaseCluster68FC2945",
+                "name": null,
+                "type": "DBCluster",
+                "properties": {
+                    "CopyTagsToSnapshot": true,
+                    "DBClusterIdentifier": "databasecluster",
+                    "DBClusterParameterGroupName": "default.aurora-mysql5.7",
+                    "DBSubnetGroupName": {
+                        "Ref": "DatabaseClusterSubnets7FAE1846"
+                    },
+                    "DeletionProtection": false,
+                    "Engine": "aurora-mysql",
+                    "EngineMode": "serverless",
+                    "EngineVersion": "5.7.mysql_aurora.2.08.1",
+                    "MasterUserPassword": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "{{resolve:secretsmanager:",
+                                {
+                                    "Ref": "DatabaseClusterSecret3F333A5B"
+                                },
+                                ":SecretString:password::}}"
+                            ]
+                        ]
+                    },
+                    "MasterUsername": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "{{resolve:secretsmanager:",
+                                {
+                                    "Ref": "DatabaseClusterSecret3F333A5B"
+                                },
+                                ":SecretString:username::}}"
+                            ]
+                        ]
+                    },
+                    "ScalingConfiguration": {
+                        "AutoPause": true,
+                        "MaxCapacity": 32,
+                        "MinCapacity": 1,
+                        "SecondsUntilAutoPause": 900
+                    },
+                    "StorageEncrypted": true,
+                    "VpcSecurityGroupIds": [
+                        {
+                            "Fn::GetAtt": [
+                                "DatabaseClusterSecurityGroupCBE34284",
+                                "GroupId"
+                            ]
+                        }
+                    ]
+                },
+                "tier": "Database"
+            },
             {
                 "id": "MediaTableCFC93525",
                 "name": "MediaTableCFC93525",
+                "type": "Table",
+                "properties": {
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "id",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "id",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 5,
+                        "WriteCapacityUnits": 5
+                    }
+                },
+                "tier": "Database"
+            },
+            {
+                "id": "UsersTable9725E9C8",
+                "name": "UsersTable9725E9C8",
+                "type": "Table",
+                "properties": {
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "id",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "id",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 5,
+                        "WriteCapacityUnits": 5
+                    }
+                },
+                "tier": "Database"
+            },
+            {
+                "id": "GroupsTableE5F9C3F0",
+                "name": "GroupsTableE5F9C3F0",
                 "type": "Table",
                 "properties": {
                     "AttributeDefinitions": [
@@ -82,6 +250,32 @@
         ],
         "Compute": [
             {
+                "id": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+                "name": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+                "type": "Function",
+                "properties": {
+                    "Code": {
+                        "S3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                        },
+                        "S3Key": "dd5711540f04e06aa955d7f4862fc04e8cdea464cb590dae91ed2976bb78098e.zip"
+                    },
+                    "Timeout": 900,
+                    "MemorySize": 128,
+                    "Handler": "__entrypoint__.handler",
+                    "Role": {
+                        "Fn::GetAtt": [
+                            "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+                            "Arn"
+                        ]
+                    },
+                    "Runtime": "nodejs18.x",
+                    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+                },
+                "tier": "Compute",
+                "group": "Cus"
+            },
+            {
                 "id": "MediaFunctionD33228E9",
                 "name": "MediaFunctionD33228E9",
                 "type": "Function",
@@ -96,6 +290,12 @@
                         "Variables": {
                             "TABLE_NAME": {
                                 "Ref": "MediaTableCFC93525"
+                            },
+                            "USERS_TABLE_NAME": {
+                                "Ref": "UsersTable9725E9C8"
+                            },
+                            "SQL_TABLE_NAME": {
+                                "Ref": "DatabaseCluster68FC2945"
                             },
                             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                         }
@@ -127,6 +327,9 @@
                         "Variables": {
                             "TABLE_NAME": {
                                 "Ref": "MediaTableCFC93525"
+                            },
+                            "GROUPS_TABLE_NAME": {
+                                "Ref": "GroupsTableE5F9C3F0"
                             },
                             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                         }
@@ -336,11 +539,23 @@
     },
     "Edges": [
         {
+            "source": "DatabaseCluster68FC2945",
+            "target": "MediaFunctionD33228E9"
+        },
+        {
             "source": "MediaTableCFC93525",
             "target": "MediaFunctionD33228E9"
         },
         {
             "source": "MediaTableCFC93525",
+            "target": "MediaFunction2B5AA6D13"
+        },
+        {
+            "source": "UsersTable9725E9C8",
+            "target": "MediaFunctionD33228E9"
+        },
+        {
+            "source": "GroupsTableE5F9C3F0",
             "target": "MediaFunction2B5AA6D13"
         },
         {
