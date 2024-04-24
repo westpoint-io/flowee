@@ -1,28 +1,17 @@
 import { NodeProps } from 'reactflow';
+import { ResourceGroup, ResourceGroupTitle, ResourceGroupTitleLabel } from './styles';
 
 function GroupNode(props: NodeProps) {
-  console.log(props.data.count);
   return (
-    <div
-      class="resource-group"
-      style={{
-        height: 110 * props.data.count,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)'
-      }}
-    >
-      <div
-        class="resource-group-title"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 22
-        }}
-      >
-        <label htmlFor="text">{props.data.label}</label>
-      </div>
-    </div>
+    <ResourceGroup style={{
+        height: 100 * props.data.heightMultiplier,
+        width: 110 * props.data.widthMultiplier,
+        marginTop: -30,
+    }}>
+      <ResourceGroupTitle>
+        <ResourceGroupTitleLabel htmlFor="text">{props.data.label}</ResourceGroupTitleLabel>
+      </ResourceGroupTitle>
+    </ResourceGroup>
   );
 }
 
