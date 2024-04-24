@@ -6,50 +6,53 @@ import ResourceNode from './components/ResourceNode';
 import SubGroupNode from './components/SubGroupNode';
 import { useEffect, useState } from 'preact/hooks';
 import { createGroupNodes } from './generators/createGroupNodes';
-import './app.css';
 import { removeDuplicates } from './utils';
 
 const nodeTypes = {
   resourceGroup: GroupNode,
   resourceNode: ResourceNode,
-  subGroupNode: SubGroupNode
+  subGroupNode: SubGroupNode,
 };
 
+type TypeServices = typeof Items;
+type ServiceNames = keyof TypeServices;
+
+const Elements = Items;
+
 export function App() {
-  const [elements, setElements] = useState<any>([]);
+  const [elements, setElements] = useState<TypeServices>({} as TypeServices);
   const [nodes, setNodes] = useState<any>([]);
   const [edges, setEdges] = useState<any>([]);
   const [groups, setGroups] = useState<any>([]);
 
   useEffect(() => {
-    const Elements: any = Items;
+    // const Elements = Items;
     console.log(Elements);
     setElements(Elements);
-    setNodes([]);
-
+    // setNodes([]);
     const noDuplicates = removeDuplicates(Edges);
-    setEdges(
-      noDuplicates.map((edge: any) => ({
-        ...edge,
-        id: `${edge.source}-${edge.target}`,
-        markerStart: {
-          type: MarkerType.ArrowClosed,
-          fill: '#C0C0C0',
-          width: 50,
-          height: 50,
-          color: '#C0C0C0'
-        },
-        style: {
-          stroke: '#C0C0C0',
-          strokeWidth: 0.5
-        }
-      }))
-    );
-    setGroups(
-      Object.keys(Elements)
-        .reverse()
-        .filter((group: string) => Elements[group].length > 0)
-    );
+    const newEdges = noDuplicates.map((edge) => ({
+      ...edge,
+      id: `${edge.source}-${edge.target}`,
+      markerStart: {
+        type: MarkerType.ArrowClosed,
+        fill: '#C0C0C0',
+        width: 50,
+        height: 50,
+        color: '#C0C0C0',
+      },
+      style: {
+        stroke: '#C0C0C0',
+        strokeWidth: 0.5,
+      },
+    }));
+
+    setEdges(newEdges);
+
+    const sortedServiceNames = Object.keys(Elements).reverse();
+    const filteredServiceNames = sortedServiceNames.filter((serviceName) => Elements[serviceName as ServiceNames].length > 0);
+
+    setGroups(filteredServiceNames);
   }, []);
 
   useEffect(() => {
