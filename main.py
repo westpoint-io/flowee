@@ -4,14 +4,28 @@ import json
 tiers = {
     'Storage': ['S3::Bucket'],
     'ETL': ['StepFunctions::StateMachine'],
-    'Database': ['DynamoDB::Table', 'RDS::DBCluster'],
+    'Database': ['DynamoDB::Table', 'RDS::DBCluster','Neptune::DBCluster','ElastiCache::CacheCluster',
+                 'Cassandra::Keyspace','Redshift::Cluster','Timestream::Database'],
     'Compute': ['EC2::Instance', 'Lambda::Function'],
-    "Integration": ['ApiGateway::Method'],
-    'Network': [ 'CloudFront::Distribution', 'ApiGateway::RestApi'],
+    "Integration": ['ApiGateway::Method','Events::EventBus'],
+    'Network': [ 'CloudFront::Distribution', 'ApiGateway::RestApi', 'EC2::VPC', 'Connect::Instance','WAF::WebACL'],
     'Ingress': ['Route53::HostedZone', 'CertificateManager::Certificate'],
+    "Security": ['GuardDuty::Detector','CloudTrail::Trail','KMS::Key','Shield::Protection'],
+    "Management": ['Cognito::UserPool','IdentityStore::Group'],
+    "Streaming": ['Kinesis::Stream'],
+    "Delivery": ['SES::ConfigurationSet', 'SQS::Queue'],
+    'Front':['Amplify::App'],
+    'IOT':['IoT::TopicRule','IoTAnalytics::Datastore'],
+    
 }
 
 groups = [tier for tier in tiers]
+
+def filterRepeatedVPC(x):
+  if "VPCG"in x:
+    return False
+  else:
+    return True
 
 def group_items_by_property(items, property_name):
     grouped_items = {}
@@ -57,14 +71,31 @@ def get_resource_name(resource):
             return resource['Properties']['DistributionConfig']['Aliases'][0]
         elif type == 'AWS::Route53::HostedZone':
             return resource['Properties']['Name']
+        elif type == 'AWS::EC2::VPC':
+            return resource['Properties']['Tags'][0]["Value"]
+        elif type == 'AWS::Events::EventBus':
+            return resource['Properties']['Name']
+        elif type == 'AWS::GuardDuty::Detector':
+            return resource['Properties']['Tags'][0]["Value"]
     except:
         return resource['ResourceId']
     
+def get_type_name(resource):
+    name = resource['Type'].split('::')[-1]
+    if 'Neptune' in resource['Type']:
+        name = 'DBClusterNep'
+    
+    if 'AWS::Connect' in resource['Type']:
+        name = "InstanceConnect"
+    
+    return name
+
 def sanitize_resources(tier, resource):
+    type_name = get_type_name(resource)
     return {
         'id': resource['ResourceId'],
         'name': get_resource_name(resource),
-        'type': resource['Type'].split('::')[-1],
+        'type': type_name,
         'properties': resource['Properties'],
         'tier': tier
     }
@@ -76,7 +107,8 @@ def map_resources_to_actual_resource(id, template):
     template['Resources'][id]['ResourceId'] = id
     return template['Resources'][id]
 
-with open('/home/dario/flowee/example/cdk.out/ExamplesStack.template.json') as f:
+
+with open('/home/camilo/Escritorio/Flowee-Project/flowee/example/cdk.out/ExamplesStack.template.json') as f:
 # with open('template.json') as f:
     cloudformation_json = f.read()
 
@@ -84,6 +116,8 @@ with open('/home/dario/flowee/example/cdk.out/ExamplesStack.template.json') as f
 
     # Initialize a dictionary to hold the classification
     classified_resources = {tier: extract_all_resources_from_tier(tier) for tier in tiers}
+    classified_resources["Network"] = filter(filterRepeatedVPC, classified_resources["Network"])
+    # print(json.dumps(classified_resources))
     classified_resources = {tier: [map_resources_to_actual_resource(resource, template) for resource in classified_resources[tier]] for tier in tiers}
     edges = []
     all_nodes = []
@@ -113,7 +147,6 @@ with open('/home/dario/flowee/example/cdk.out/ExamplesStack.template.json') as f
                 occurrences.extend(deep_comparison(item, resource))
         
         return occurrences
-
     for tier in classified_resources:
         for resource in classified_resources[tier]:
             id = resource['id']
