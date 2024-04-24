@@ -1,4 +1,4 @@
-import ReactFlow, { Background, MarkerType } from 'reactflow';
+import ReactFlow, { Background, EdgeMarker, MarkerType, EdgeProps } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Edges, Items } from './test.json';
 import GroupNode from './components/GroupNode';
@@ -7,29 +7,32 @@ import SubGroupNode from './components/SubGroupNode';
 import { useEffect, useState } from 'preact/hooks';
 import { createGroupNodes } from './generators/createGroupNodes';
 import { removeDuplicates } from './utils';
+import { CustomNodeProps } from './@types/node';
 
 const nodeTypes = {
   resourceGroup: GroupNode,
   resourceNode: ResourceNode,
   subGroupNode: SubGroupNode,
 };
-
-type TypeServices = typeof Items;
-type ServiceNames = keyof TypeServices;
-
 const Elements = Items;
+
+type TypeServices = typeof Elements;
+type ServiceNames = keyof TypeServices;
+interface EdgeProperties extends Omit<EdgeProps, 'markerStart' | 'id'> {
+  markerStart: string | EdgeMarker;
+  id: string;
+}
 
 export function App() {
   const [elements, setElements] = useState<TypeServices>({} as TypeServices);
-  const [nodes, setNodes] = useState<any>([]);
-  const [edges, setEdges] = useState<any>([]);
-  const [groups, setGroups] = useState<any>([]);
+  const [nodes, setNodes] = useState<CustomNodeProps[]>([]);
+  const [edges, setEdges] = useState<EdgeProperties[]>([]);
+  const [groups, setGroups] = useState<ServiceNames[]>([]);
 
   useEffect(() => {
-    // const Elements = Items;
     console.log(Elements);
     setElements(Elements);
-    // setNodes([]);
+
     const noDuplicates = removeDuplicates(Edges);
     const newEdges = noDuplicates.map((edge) => ({
       ...edge,
@@ -45,18 +48,18 @@ export function App() {
         stroke: '#C0C0C0',
         strokeWidth: 0.5,
       },
-    }));
+    })) as unknown as EdgeProperties[];
 
     setEdges(newEdges);
 
-    const sortedServiceNames = Object.keys(Elements).reverse();
+    const sortedServiceNames = Object.keys(Elements).reverse() as ServiceNames[];
     const filteredServiceNames = sortedServiceNames.filter((serviceName) => Elements[serviceName as ServiceNames].length > 0);
 
     setGroups(filteredServiceNames);
   }, []);
 
   useEffect(() => {
-    const newNodes: any = createGroupNodes(groups, elements);
+    const newNodes = createGroupNodes(groups, elements);
     setNodes(newNodes);
   }, [groups]);
 
