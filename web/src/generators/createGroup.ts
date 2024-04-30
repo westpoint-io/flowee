@@ -1,18 +1,17 @@
-export interface GroupNodeProps {
-    id: string;
-    position: { x: number; y: number };
-    heightMultiplier?: number;
-    widthMultiplier?: number;
-}
+import { GroupNodeProps } from '../@types/node';
 
+/**
+ * Creates a group node with the given properties.
+ * @param groupProps - The properties of the group node.
+ * @returns The created group node.
+ */
 export const createGroup = (groupProps: GroupNodeProps) => {
+  const { id, position } = groupProps;
 
-    const { id, position } = groupProps;
-
-    return {
-        id,
-        position,
-        data: { label: id, heightMultiplier: groupProps.heightMultiplier, widthMultiplier: groupProps.widthMultiplier},
-        type: 'resourceGroup',
-    };
-}
+  return {
+    id,
+    position,
+    data: { label: id, heightMultiplier: groupProps.heightMultiplier, widthMultiplier: groupProps.widthMultiplier },
+    type: 'resourceGroup',
+  };
+};

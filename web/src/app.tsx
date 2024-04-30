@@ -1,4 +1,4 @@
-import ReactFlow, { Background, MarkerType } from 'reactflow';
+import ReactFlow, { Background, EdgeMarker, MarkerType, EdgeProps } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Edges, Items } from './test.json';
 import GroupNode from './components/GroupNode';
@@ -6,30 +6,35 @@ import ResourceNode from './components/ResourceNode';
 import SubGroupNode from './components/SubGroupNode';
 import { useEffect, useState } from 'preact/hooks';
 import { createGroupNodes } from './generators/createGroupNodes';
-import './app.css';
 import { removeDuplicates } from './utils';
+import { CustomNodeProps } from './@types/node';
 
 const nodeTypes = {
   resourceGroup: GroupNode,
   resourceNode: ResourceNode,
-  subGroupNode: SubGroupNode
+  subGroupNode: SubGroupNode,
+};
+const Elements = Items;
+
+type TypeServices = typeof Elements;
+type ServiceNames = keyof TypeServices;
+interface EdgeProperties extends Omit<EdgeProps, 'markerStart' | 'id'> {
+  markerStart: string | EdgeMarker;
+  id: string;
 }
 
 export function App() {
-  const [elements, setElements] = useState<any>([]);
-  const [nodes, setNodes] = useState<any>([]);
-  const [edges, setEdges] = useState<any>([]);
-  const [groups, setGroups] = useState<any>([]);
-
+  const [elements, setElements] = useState<TypeServices>({} as TypeServices);
+  const [nodes, setNodes] = useState<CustomNodeProps[]>([]);
+  const [edges, setEdges] = useState<EdgeProperties[]>([]);
+  const [groups, setGroups] = useState<ServiceNames[]>([]);
 
   useEffect(() => {
-    const Elements: any = Items;
-    console.log(Elements)
+    console.log(Elements);
     setElements(Elements);
-    setNodes([]);
 
     const noDuplicates = removeDuplicates(Edges);
-    setEdges(noDuplicates.map((edge: any) => ({
+    const newEdges = noDuplicates.map((edge) => ({
       ...edge,
       id: `${edge.source}-${edge.target}`,
       markerStart: {
@@ -42,30 +47,29 @@ export function App() {
       style: {
         stroke: '#C0C0C0',
         strokeWidth: 0.5,
-      }
-    })));
-    setGroups(Object.keys(Elements).reverse().filter((group: string) => Elements[group].length > 0));
+      },
+    })) as unknown as EdgeProperties[];
+
+    setEdges(newEdges);
+
+    const sortedServiceNames = Object.keys(Elements).reverse() as ServiceNames[];
+    const filteredServiceNames = sortedServiceNames.filter((serviceName) => Elements[serviceName as ServiceNames].length > 0);
+
+    setGroups(filteredServiceNames);
   }, []);
 
   useEffect(() => {
-    const newNodes: any = createGroupNodes(groups, elements);
+    const newNodes = createGroupNodes(groups, elements);
     setNodes(newNodes);
   }, [groups]);
 
   return (
     <>
       <div style={{ width: '100vw', height: '100vh' }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-        >
-          <Background
-            gap={16}
-            size={1}
-          />
+        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}>
+          <Background gap={16} size={1} />
         </ReactFlow>
       </div>
     </>
-  )
+  );
 }
