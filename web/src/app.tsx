@@ -1,6 +1,6 @@
 import ReactFlow, { Background, EdgeMarker, MarkerType, EdgeProps } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Edges, Items } from './test.json';
+import { Edges, Items } from './schema.json';
 import GroupNode from './components/GroupNode';
 import ResourceNode from './components/ResourceNode';
 import SubGroupNode from './components/SubGroupNode';
@@ -66,7 +66,12 @@ export function App() {
   return (
     <>
       <div style={{ width: '100vw', height: '100vh' }}>
-        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          fitView
+        >
           <Background gap={16} size={1} />
         </ReactFlow>
       </div>
