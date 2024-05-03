@@ -1,6 +1,19 @@
 import json
-from utils import start_react_server, take_screenshot, stop_react_server
+from flowee.utils import run_react_app
 import click
+import site
+import os
+
+# Get the path to the site-packages directory
+site_packages_path = site.getsitepackages()[0]
+
+package_name = 'flowee'
+
+# Path to the installed package directory
+package_path = os.path.join(site_packages_path, package_name)
+
+# Path to the 'web' folder inside the package
+web_folder_path = os.path.join(package_path, 'web')
 
 template = None
 # Define the classification of resources into tiers with more comprehensive resource types
@@ -212,20 +225,9 @@ def generate_diagram(path, name, cf):
             "Edges": edges
         }
 
-        with open('web/src/schema.json', 'w') as f:
+        with open(f'{web_folder_path}/src/schema.json', 'w+') as f:
             json.dump(result, f, indent=4)
-    
-        # Start the React development server
-        react_process = start_react_server()
 
-        # Take a screenshot of the running React application
-        take_screenshot(path, name)
-
-        # Kill the React development server
-
-        stop_react_server(react_process)
+        run_react_app(path, name)
             
 cli.add_command(generate_diagram)
-
-if __name__ == '__main__':
-    cli()
