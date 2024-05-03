@@ -1,0 +1,73 @@
+@import "reset.css";
+@import "./utils/index.css";
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+/**/
+body {
+  overflow-x: hidden;
+  height: 100vh;
+
+  font-family: "Space Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+.main-content {
+  display: flex;
+  margin: 0 auto;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 12rem;
+  /* align-content: center; */
+}
+
+.github-button {
+  padding: 0.8rem 2.5rem;
+  border: 2px solid #000;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #000;
+  text-decoration: none;
+  transition: background 0.4s, color 0.4s;
+}
+
+.github-button:hover {
+  background-color: #000;
+  color: #fff;
+  .github-icon {
+    filter: invert(100%) sepia(95%) saturate(128%) hue-rotate(301deg)
+      brightness(117%) contrast(100%);
+  }
+}
+
+.documentation-button {
+  display: flex;
+  gap: 1rem;
+  padding: 0.8rem 1.7rem;
+  border: 2px solid #43d1da;
+  border-radius: 99px;
+  background-color: #43d1da;
+  color: #1e1919;
+  text-decoration: none;
+  transition: background 0.4s, color 0.4s;
+}
+
+.documentation-button:hover {
+  background-color: #fff;
+  color: #43d1da;
+  .documentation-icon {
+    filter: invert(84%) sepia(97%) saturate(1420%) hue-rotate(140deg)
+      brightness(88%) contrast(91%);
+  }
+}
+
+.github-icon,
+.documentation-icon {
+  transition: filter 0.4s;
+}
+
+.shadows-gift {
+  box-shadow: -70px 80px 4px #f9f9f9;
+}
