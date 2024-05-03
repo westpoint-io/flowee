@@ -1,3 +1,7 @@
 .venv
 template.json
 myenv
+chromedriver*
+build
+dist
+*.egg-info
