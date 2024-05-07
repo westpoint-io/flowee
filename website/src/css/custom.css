@@ -18,7 +18,7 @@
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme="dark"] {
+[data-theme='dark'] {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
   --ifm-color-primary-darker: #1fa588;
@@ -115,11 +115,11 @@ mark,
 audio,
 video {
   margin: 0;
-  padding: 0;
   border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
+  font-family: inherit;
+}
+h2 {
+  margin-bottom: 1rem;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -137,15 +137,6 @@ section {
   display: block;
 }
 
-body {
-  line-height: 1;
-}
-
-ol,
-ul {
-  list-style: none;
-}
-
 blockquote,
 q {
   quotes: none;
@@ -155,7 +146,7 @@ blockquote:before,
 blockquote:after,
 q:before,
 q:after {
-  content: "";
+  content: '';
   content: none;
 }
 
