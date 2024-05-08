@@ -1,7 +1,17 @@
+import { useEffect, useState } from 'react';
 import styles from './flowee.module.css';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 export default function Home(): JSX.Element {
+  const [hoverEffect, setHoverEffect] = useState(false);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHoverEffect((hoverEffect) => !hoverEffect);
+    }, 5500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <main className={`${styles['main-content']}`}>
       <section className={`${styles.margin}`}>
@@ -25,9 +35,17 @@ export default function Home(): JSX.Element {
           </a>
         </section>
       </section>
-      <section className="">
-        <img className={`${styles['rounded-lg']} ${styles['shadows-gift']}`} src={useBaseUrl('/public/terminal.gif')} alt="terminal gif" />
-      </section>
+
+      <div className="flip-container">
+        <div className="flipper" style={{ transform: hoverEffect ? 'rotateY(180deg)' : 'none' }}>
+          <div className="front">
+            <img className={`${styles['rounded-lg']} ${styles['shadows-gift']}`} src={useBaseUrl('/public/terminal.gif')} alt="Imagen 1" />
+          </div>
+          <div className="back">
+            <img src={useBaseUrl('/public/diagram.png')} alt="Imagen 2" />
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
