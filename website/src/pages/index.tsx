@@ -5,7 +5,7 @@ export default function Home(): JSX.Element {
   return (
     <main className={`${styles['main-content']}`}>
       <section className={`${styles.margin}`}>
-        <h1 className={`${styles['text-5xl']} ${styles['margin-bot-1_5']}`}>Flowee</h1>
+        <h1 className={`${styles['font-weight-400']} ${styles['text-5xl']} ${styles['margin-bot-1_5']}`}>Flowee</h1>
         <p className={`${styles['text-lg']} ${styles['gray-light']} ${styles['margin-bot-1_5']} ${styles['w-500']}`}>
           Generate AWS diagrams using your cloudformation templates as input directly from flowee CLI
         </p>
@@ -19,7 +19,7 @@ export default function Home(): JSX.Element {
             <span className={`${styles['text-sm']}`}>Github</span>
             <img className={`${styles['github-icon']}`} src={useBaseUrl('public/github.svg')} alt="github icon" />
           </a>
-          <a className={`${styles['documentation-button']}`} href={useBaseUrl('/docs/Getting_Started')}>
+          <a className={`${styles['documentation-button']}`} href={useBaseUrl('/docs/Introduction')}>
             <span className={`${styles['text-sm']}`}>Documentation</span>
             <img className={`${styles['documentation-icon']}`} src={useBaseUrl('/public/documentation.svg')} alt="documentation icon" />
           </a>

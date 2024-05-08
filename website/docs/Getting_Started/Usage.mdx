@@ -1,0 +1,21 @@
+---
+description: Use Flowee to generate a diagram of your CloudFormation template.
+---
+
+# Usage
+
+## Starting Flowee
+
+To start Flowee, run the following command:
+
+```bash
+flowee diagram-generate --cf <path-to-your-cloudformation-template> --path <output-directory>
+```
+
+This will generate a json file of your CloudFormation template in the specified output directory.
+
+## Options
+
+- `--cf`: The path to your CloudFormation template. Default is `template.json`.
+- `--path`: The output directory where the diagram will be saved. Default is the current directory.
+- `--name`: The name of the diagram file. Default is `aws-diagram`.

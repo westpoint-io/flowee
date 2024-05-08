@@ -1,3 +1,15 @@
+/* ----- */
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+:root {
+  --primary-color: #000;
+  --secondary-color: #fff;
+}
+
+[data-theme='dark'] {
+  --primary-color: #fff;
+  --secondary-color: #000;
+}
+
 /* ------------------------------------ */
 /* margins */
 .margin-0-auto {
@@ -97,16 +109,16 @@
   width: 500px;
 }
 
+.font-weight-400 {
+  font-weight: 400;
+}
+
 /* ------------------------------------ */
 
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-
-/**/
 body {
   overflow-x: hidden;
   height: 100vh;
-
-  font-family: "Space Mono", monospace;
+  font-family: 'Space Mono', monospace;
   font-weight: 400;
   font-style: normal;
 }
@@ -125,22 +137,21 @@ body {
   display: flex;
   align-items: center;
   padding: 0.8rem 2.5rem;
-  border: 2px solid #000;
+  border: 2px solid var(--primary-color);
   border-radius: 99px;
   gap: 1rem;
-  color: #000;
+  color: var(--primary-color);
   text-decoration: none;
   transition: background 0.4s, color 0.4s;
 }
 
 .github-button:hover {
-  background-color: #000;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 .github-button:hover .github-icon {
-  filter: invert(100%) sepia(95%) saturate(128%) hue-rotate(301deg)
-    brightness(117%) contrast(100%);
+  filter: invert(100%) sepia(95%) saturate(128%) hue-rotate(301deg) brightness(117%) contrast(100%);
 }
 
 .documentation-button {
@@ -161,8 +172,7 @@ body {
 }
 
 .documentation-button:hover .documentation-icon {
-  filter: invert(84%) sepia(97%) saturate(1420%) hue-rotate(140deg)
-    brightness(88%) contrast(91%);
+  filter: invert(84%) sepia(97%) saturate(1420%) hue-rotate(140deg) brightness(88%) contrast(91%);
 }
 
 .github-icon,
@@ -176,4 +186,12 @@ body {
 
 .theme-doc-breadcrumbs {
   display: None;
+}
+
+[data-theme='dark'] .github-icon {
+  filter: invert(100%) sepia(95%) saturate(128%) hue-rotate(301deg) brightness(117%) contrast(100%);
+}
+
+[data-theme='dark'] .github-button:hover .github-icon {
+  filter: invert(0%) sepia(99%) saturate(7432%) hue-rotate(76deg) brightness(91%) contrast(101%);
 }
