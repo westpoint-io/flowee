@@ -1,24 +1,35 @@
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py as BuildPyCommand
-import subprocess
-import os
-import site
+import os, time
 
-site_packages = site.getsitepackages()[0]
+web_folder_path = os.path.join('./flowee', 'web')
 
+# Delete npm lock file if it exists from the web folder
+lock_file_path = os.path.join(web_folder_path, 'package-lock.json')
+if os.path.exists(lock_file_path):
+    os.remove(lock_file_path)
 
-class PostBuildCommand(BuildPyCommand):
-    def run(self):
-        # Run npm install command
-        npm_install_command = ['npm', 'install']
-        subprocess.check_call(npm_install_command, cwd=os.path.join(site_packages, 'flowee', 'web'))
+# Delete yarn lock file if it exists from the web folder
+lock_file_path = os.path.join(web_folder_path, 'yar.lock')
+if os.path.exists(lock_file_path):
+    os.remove(lock_file_path)
 
-        # Continue with the default installation process
-        super().run()
+# Remove node_modules folder if it exists from the web folder
+node_modules_path = os.path.join(web_folder_path, 'node_modules')
+if os.path.exists(node_modules_path):
+    import shutil
+    shutil.rmtree(node_modules_path)
 
+# Remove dist folder if it exists from the web folder
+dist_path = os.path.join(web_folder_path, 'dist')
+if os.path.exists(dist_path):
+    import shutil
+    shutil.rmtree(dist_path)
+
+time.sleep(3)
 setup(
     name='flowee',
-    version='1.0',
+    version='1.1',
     packages=find_packages(),
     install_requires=[
         'playwright',
@@ -29,8 +40,5 @@ setup(
         'console_scripts': [
             'flowee=flowee.cli:main',
         ],
-    },
-    cmdclass={
-        'build_py': PostBuildCommand,
     }
 )

@@ -1,19 +1,17 @@
 import json
-from flowee.utils import run_react_app
+from flowee.utils import run_react_app, get_package_installation_path
 import click
-import site
 import os
 
-# Get the path to the site-packages directory
-site_packages_path = site.getsitepackages()[0]
-
 package_name = 'flowee'
+package_path = get_package_installation_path(package_name)
 
-# Path to the installed package directory
-package_path = os.path.join(site_packages_path, package_name)
-
-# Path to the 'web' folder inside the package
-web_folder_path = os.path.join(package_path, 'web')
+if package_path:
+    web_folder_path = os.path.join(package_path, package_name,  'web')
+    print("Path to 'web' folder inside the package:", web_folder_path)
+else:
+    print("Package '{}' is not installed.".format(package_name))
+    exit()
 
 template = None
 # Define the classification of resources into tiers with more comprehensive resource types
