@@ -191,3 +191,25 @@ table {
 .back {
   transform: rotateY(180deg);
 }
+
+@media (600px < width <= 780px) {
+  .flip-container {
+    width: 400px;
+    position: relative;
+    top: 6rem;
+  }
+  .front,
+  .back {
+    width: 100%;
+  }
+}
+
+@media (width <= 600px) {
+  .flip-container {
+    width: 370px;
+  }
+  .front,
+  .back {
+    width: 100%;
+  }
+}
