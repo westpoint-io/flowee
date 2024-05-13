@@ -1,20 +1,14 @@
 import { useEffect, useState } from 'react';
 import styles from './flowee.module.css';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { useHoverEffect } from '../hooks/index/useHover';
 
 export default function Home(): JSX.Element {
-  const [hoverEffect, setHoverEffect] = useState(false);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHoverEffect((hoverEffect) => !hoverEffect);
-    }, 5500);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { hoverEffect } = useHoverEffect();
 
   return (
     <main className={`${styles['main-content']}`}>
-      <section className={`${styles.margin}`}>
+      <section className={`${styles['main-content-text']}`}>
         <h1 className={`${styles['font-weight-400']} ${styles['text-5xl']} ${styles['margin-bot-1_5']}`}>Flowee</h1>
         <p className={`${styles['text-lg']} ${styles['gray-light']} ${styles['margin-bot-1_5']} ${styles['w-500']}`}>
           Generate AWS diagrams using your cloudformation templates as input directly from flowee CLI
