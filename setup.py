@@ -1,6 +1,11 @@
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 import os, time, subprocess, sys
+# read the contents of your README file
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.MD").read_text()
+
 
 class PostInstallCommand(install):
     def run(self):
@@ -42,12 +47,13 @@ if os.path.exists(dist_path):
 time.sleep(3)
 setup(
     name='flowee',
-    version='1.0',
+    version='1.7',
     packages=find_packages(),
     install_requires=[
         'playwright',
         'click'
     ],
+    description='A CLI tool to create AWS diagrams from Cloudformation templates.',
     package_data={'flowee': ['web/*/**/**/*']},
     include_package_data=True,
     entry_points={
@@ -58,4 +64,7 @@ setup(
     cmdclass={
         'install': PostInstallCommand,
     },
+    author='Westpoint Software Solutions',
+    long_description=long_description,
+    long_description_content_type='text/markdown'
 )

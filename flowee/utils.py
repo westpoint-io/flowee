@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 import subprocess
 import os
 import pkg_resources
+import sys
 
 def get_package_installation_path(package_name):
     # Get information about the installed package
@@ -37,10 +38,10 @@ def take_screenshot(path, name):
         print(f"Screenshot saved at: {screenshot_path}")
 
 def run_react_app(path, name):
-
+    is_shell = sys.platform.startswith('win')
     # Start the React server in the background
-    install = subprocess.run(['npm', 'install'], cwd=web_folder_path, shell=True)
-    build = subprocess.run([ 'npm','run',  'build' ], cwd=web_folder_path, shell=True)
+    install = subprocess.run(['npm', 'install'], cwd=web_folder_path, shell=is_shell)
+    build = subprocess.run([ 'npm','run',  'build' ], cwd=web_folder_path, shell=is_shell)
     print('Opening server ...')
 
     python3_command = ['python3', '-m', 'http.server', '--directory', 'dist']
@@ -48,10 +49,10 @@ def run_react_app(path, name):
 
     try:
         # Try running the command with Python 3
-        startserver = subprocess.Popen(python3_command, cwd=web_folder_path, shell=True)
+        startserver = subprocess.Popen(python3_command, cwd=web_folder_path, shell=is_shell)
     except FileNotFoundError:
         # If Python 3 is not found, fall back to Python
-        startserver = subprocess.Popen(python_command, cwd=web_folder_path, shell=True)
+        startserver = subprocess.Popen(python_command, cwd=web_folder_path, shell=is_shell)
    
     print('Opening browser ...')
     take_screenshot(path, name)
