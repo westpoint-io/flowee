@@ -1,6 +1,19 @@
 from setuptools import setup, find_packages
-from setuptools.command.build_py import build_py as BuildPyCommand
-import os, time
+from setuptools.command.install import install
+import os, time, subprocess, sys
+
+class PostInstallCommand(install):
+    def run(self):
+        install.run(self)
+        try:
+            if sys.platform.startswith('win'):
+                subprocess.call(['playwright.cmd', 'install-deps'])  # Adjust if necessary
+                subprocess.call(['playwright.cmd', 'install'])       # Adjust if necessary
+            else:
+                subprocess.call(['playwright', 'install-deps'])
+                subprocess.call(['playwright', 'install'])
+        except FileNotFoundError:
+            print("Playwright not found. Please make sure it's installed and in your PATH.")
 
 web_folder_path = os.path.join('./flowee', 'web')
 
@@ -29,10 +42,11 @@ if os.path.exists(dist_path):
 time.sleep(3)
 setup(
     name='flowee',
-    version='1.1',
+    version='1.0',
     packages=find_packages(),
     install_requires=[
         'playwright',
+        'click'
     ],
     package_data={'flowee': ['web/*/**/**/*']},
     include_package_data=True,
@@ -40,5 +54,8 @@ setup(
         'console_scripts': [
             'flowee=flowee.cli:main',
         ],
-    }
+    },
+    cmdclass={
+        'install': PostInstallCommand,
+    },
 )
